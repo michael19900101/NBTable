@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/item_layout"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:clickable="true">
+
+    <TextView
+        android:id="@+id/tv1"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:textColor="@android:color/holo_blue_bright"
+        android:background="@drawable/test_white_bg"
+        tools:text="怪气无语 第一季"/>
+
+    <TextView
+        android:id="@+id/tv2"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:textColor="@android:color/holo_blue_bright"
+        android:background="@drawable/test_white_bg"
+        tools:text="怪气无语 第一季"/>
+
+    <TextView
+        android:id="@+id/tv3"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:textColor="@android:color/holo_blue_bright"
+        android:background="@drawable/test_white_bg"
+        tools:text="怪气无语 第一季"/>
+
+    <TextView
+        android:id="@+id/tv4"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:textColor="@android:color/holo_blue_bright"
+        android:background="@drawable/test_white_bg"
+        tools:text="怪气无语 第一季"/>
+
+    <TextView
+        android:id="@+id/tv5"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:textColor="@android:color/holo_blue_bright"
+        android:background="@drawable/test_white_bg"
+        tools:text="怪气无语 第一季"/>
+
+    <TextView
+        android:id="@+id/tv6"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:textColor="@android:color/holo_blue_bright"
+        android:background="@drawable/test_white_bg"
+        tools:text="怪气无语 第一季"/>
+
+    <TextView
+        android:id="@+id/tv7"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_gravity="center"
+        android:textColor="@android:color/holo_blue_bright"
+        android:background="@drawable/test_white_bg"
+        tools:text="怪气无语 第一季"/>
+
+</LinearLayout>
