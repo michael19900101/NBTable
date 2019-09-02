@@ -42,13 +42,13 @@ public class XWRecyclerViewAdapter extends RecyclerView.Adapter<XWRecyclerViewAd
     public void onBindViewHolder(RecyclerHolder holder, int position) {
         Log.e("jbjb","onBindViewHolder position:"+position);
         HorizontalBean item = dataList.get(position);
-        holder.tv1.setText(item.getName());
-        holder.tv2.setText(item.getName()+"1");
-        holder.tv3.setText(item.getName()+"2");
-        holder.tv4.setText(item.getName()+"3");
-        holder.tv5.setText(item.getName()+"4");
-        holder.tv6.setText(item.getName()+"5");
-        holder.tv7.setText(item.getName()+"6");
+        holder.tv1.setText(item.getName()+"第0列");
+        holder.tv2.setText(item.getName()+"第1列");
+        holder.tv3.setText(item.getName()+"第2列");
+        holder.tv4.setText(item.getName()+"第3列");
+        holder.tv5.setText(item.getName()+"第4列");
+        holder.tv6.setText(item.getName()+"第5列");
+        holder.tv7.setText(item.getName()+"第6列");
     }
 
     @Override

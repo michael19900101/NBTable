@@ -16,8 +16,8 @@ public class HorizontalBean {
 
     public static List<HorizontalBean> initDatas() {
         List<HorizontalBean> datas = new ArrayList<>();
-        for (int i = 0;i < 100;i ++){
-            datas.add(new HorizontalBean(i, "小明"+i));
+        for (int i = 0;i < 1000;i ++){
+            datas.add(new HorizontalBean(i, "第"+i+"行"));
         }
 
         return datas;
