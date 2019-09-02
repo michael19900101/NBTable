@@ -15,10 +15,12 @@ public class XWLayoutManager extends RecyclerView.LayoutManager {
     private int mFirstVisiPos;//屏幕可见的第一个View的Position
     private int mLastVisiPos;//屏幕可见的最后一个View的Position
     private int rowWidth;//行宽
+    private int freezeColumns = 1;//冻结列数
+    private static final float Z_ORDER_VALUE = 3f;
 
     private SparseArray<Rect> mItemRects;//key 是View的position，保存View的bounds 和 显示标志，
 
-    public XWLayoutManager(Context context,int rowWidth) {
+    public XWLayoutManager(Context context, int rowWidth) {
         this.rowWidth = rowWidth;
         mItemRects = new SparseArray<>();
     }
@@ -62,7 +64,7 @@ public class XWLayoutManager extends RecyclerView.LayoutManager {
      * @param state
      */
     private void fill(RecyclerView.Recycler recycler, RecyclerView.State state) {
-        fill(recycler, state,0);
+        fill(recycler, state, 0, 0);
     }
 
     @Override
@@ -96,17 +98,22 @@ public class XWLayoutManager extends RecyclerView.LayoutManager {
             }
         }
 
-        realOffset = fill(recycler, state, realOffset); //先填充，再位移。
+        realOffset = fill(recycler, state, 0, realOffset); //先填充，再位移。
 
         mVerticalOffset += realOffset; //累加实际滑动距离
 
         offsetChildrenVertical(-realOffset); //滑动
+
+        if (freezeColumns > 0) {
+            offsetFreezeColumnVertical(dy);
+        }
 
         return realOffset;
     }
 
     /**
      * 行宽大于表格宽度才可以横向滑动
+     *
      * @return
      */
     @Override
@@ -124,22 +131,113 @@ public class XWLayoutManager extends RecyclerView.LayoutManager {
         int realOffset = dx;//实际滑动的距离
         // 边界修复代码
         if (mHorizontalOffset + realOffset < 0) { //左边界
-            realOffset = - mHorizontalOffset;
-        }else {
+            realOffset = -mHorizontalOffset;
+        } else {
             int maxScrollWidth = rowWidth - getWidth();
-            if(mHorizontalOffset + realOffset >= maxScrollWidth){
+            if (mHorizontalOffset + realOffset >= maxScrollWidth) {
                 realOffset = maxScrollWidth - mHorizontalOffset;
             }
         }
 
-        fill(recycler, state, 0);//先填充，再位移。
+        fill(recycler, state, realOffset, 0);//先填充，再位移。
 
         mHorizontalOffset += realOffset;//累加实际滑动距离
 
         offsetChildrenHorizontal(-realOffset);//滑动
 
+        if (freezeColumns > 0) {
+            offsetFreezeColumnHorizontal(realOffset);
+        }
+
         return dx;
     }
+
+
+    /**
+     * 平移冻结列
+     *
+     * @param dx
+     */
+    private void offsetFreezeColumnHorizontal(int dx) {
+        if (getChildCount() > 0) {
+            int leftStandard = 0;
+            View firstVisibleRowView = getChildAt(0);
+            if (firstVisibleRowView != null) {
+                View childView = ((ViewGroup) firstVisibleRowView).getChildAt(0);
+                leftStandard = childView.getLeft();
+            }
+            for (int i = 0; i < getChildCount(); i++) {
+                View rowView = getChildAt(i);
+                if (rowView != null) {
+                    for (int j = 0; j < freezeColumns; j++) {
+                        int offsetChildWidth = 0;
+                        for (int k = j - 1; k >= 0; k--) {
+                            View childView = ((ViewGroup) rowView).getChildAt(k);
+                            if (childView != null) {
+                                offsetChildWidth += childView.getMeasuredWidth();
+                            }
+                        }
+                        View childView = ((ViewGroup) rowView).getChildAt(j);
+                        if (childView != null) {
+                            // 设置z轴的值，才能覆盖其他view
+                            childView.setZ(Z_ORDER_VALUE);
+                            int horizontalOffset = leftStandard - childView.getLeft() + offsetChildWidth;
+                            childView.offsetLeftAndRight(dx + horizontalOffset);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 竖直方向滚动，平移冻结列
+     */
+    private void offsetFreezeColumnVertical(int dy) {
+        if (dy == 0) {
+            return;
+        }
+        if (getChildCount() > 0) {
+            int leftStandard = 0;
+            // 向上滑，加载更多的行
+            if (dy > 0) {
+                View firstVisibleRowView = getChildAt(0);
+                if (firstVisibleRowView != null) {
+                    View childView = ((ViewGroup) firstVisibleRowView).getChildAt(0);
+                    leftStandard = childView.getLeft();
+                }
+            } else {
+                // 向下滑，显示之前的行
+                View lastVisibleRowView = getChildAt(getChildCount() - 1);
+                if (lastVisibleRowView != null) {
+                    View childView = ((ViewGroup) lastVisibleRowView).getChildAt(0);
+                    leftStandard = childView.getLeft();
+                }
+            }
+            for (int i = 0; i < getChildCount(); i++) {
+                View rowView = getChildAt(i);
+                if (rowView != null) {
+                    for (int j = 0; j < freezeColumns; j++) {
+                        int offsetChildWidth = 0;
+                        for (int k = j - 1; k >= 0; k--) {
+                            View childView = ((ViewGroup) rowView).getChildAt(k);
+                            if (childView != null) {
+                                offsetChildWidth += childView.getMeasuredWidth();
+                            }
+                        }
+                        View childView = ((ViewGroup) rowView).getChildAt(j);
+                        if (childView != null) {
+                            // 设置z轴的值，才能覆盖其他view
+                            childView.setZ(Z_ORDER_VALUE);
+                            int horizontalOffset = leftStandard - childView.getLeft() + offsetChildWidth;
+                            childView.offsetLeftAndRight(horizontalOffset);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
 
     /**
      * 填充childView的核心方法,应该先填充，再移动。
@@ -151,7 +249,7 @@ public class XWLayoutManager extends RecyclerView.LayoutManager {
      * @param dy       RecyclerView给我们的位移量,+,显示底端， -，显示头部
      * @return 修正以后真正的dy（可能剩余空间不够移动那么多了 所以return <|dy|）
      */
-    private int fill(RecyclerView.Recycler recycler, RecyclerView.State state, int dy) {
+    private int fill(RecyclerView.Recycler recycler, RecyclerView.State state, int dx, int dy) {
 
         int topOffset = getPaddingTop();
 
@@ -193,7 +291,7 @@ public class XWLayoutManager extends RecyclerView.LayoutManager {
             for (int i = minPos; i <= mLastVisiPos; i++) {
                 //找recycler要一个childItemView,我们不管它是从scrap里取，还是从RecyclerViewPool里取，亦或是onCreateViewHolder里拿。
                 View child = recycler.getViewForPosition(i);
-                if(child != null){
+                if (child != null) {
                     child.getLayoutParams().width = rowWidth;
                 }
                 addView(child);
@@ -251,7 +349,7 @@ public class XWLayoutManager extends RecyclerView.LayoutManager {
                     break;
                 } else {
                     View child = recycler.getViewForPosition(i);
-                    if(child != null){
+                    if (child != null) {
                         child.getLayoutParams().width = rowWidth;
                     }
                     addView(child, 0);//将View添加至RecyclerView中，childIndex为1，但是View的位置还是由layout的位置决定
