@@ -15,7 +15,7 @@ public class XWLayoutManager extends RecyclerView.LayoutManager {
     private int mFirstVisiPos;//屏幕可见的第一个View的Position
     private int mLastVisiPos;//屏幕可见的最后一个View的Position
     private int rowWidth;//行宽
-    private int freezeColumns = 1;//冻结列数
+    private int freezeColumns = 0;//冻结列数
     private static final float Z_ORDER_VALUE = 3f;
 
     private SparseArray<Rect> mItemRects;//key 是View的position，保存View的bounds 和 显示标志，
