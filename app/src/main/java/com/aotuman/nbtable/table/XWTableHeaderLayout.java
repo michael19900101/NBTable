@@ -16,21 +16,21 @@ import java.util.List;
 import java.util.Map;
 
 
-public class XWTableRowLayout extends LinearLayout {
+public class XWTableHeaderLayout extends LinearLayout {
 
     private Map<XWTableColumn, View> columnViewMap = new HashMap<>();
 
-    public XWTableRowLayout(Context context) {
+    public XWTableHeaderLayout(Context context) {
         super(context);
         init(context);
     }
 
-    public XWTableRowLayout(Context context, @Nullable AttributeSet attrs) {
+    public XWTableHeaderLayout(Context context, @Nullable AttributeSet attrs) {
         super(context, attrs);
         init(context);
     }
 
-    public XWTableRowLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
+    public XWTableHeaderLayout(Context context, @Nullable AttributeSet attrs, int defStyleAttr) {
         super(context, attrs, defStyleAttr);
         init(context);
     }
@@ -43,9 +43,9 @@ public class XWTableRowLayout extends LinearLayout {
             removeAllViews();
             for (int i = 0; i < columns.size(); i++) {
                 // 表格单元格外层布局
-                XWTableCellLayout cellLayout = (XWTableCellLayout)LayoutInflater.from(getContext()).inflate(R.layout.table_cell_view, this, false);
-                // 宽度固定，高度内容填充
-                cellLayout.setLayoutParams(new ViewGroup.LayoutParams(columns.get(i).getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT));
+                XWTableCellLayout cellLayout = (XWTableCellLayout)LayoutInflater.from(getContext()).inflate(R.layout.table_cell_header_view, this, false);
+                // 宽度固定，高度固定
+                cellLayout.setLayoutParams(new ViewGroup.LayoutParams(columns.get(i).getWidth(), columns.get(i).getHeight()));
                 if (columnViews.get(i) != null) {
                     if (columnViews.get(i).getParent() != null) {
                         ((ViewGroup) (columnViews.get(i).getParent())).removeView(columnViews.get(i));

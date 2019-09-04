@@ -2,32 +2,32 @@ package com.aotuman.nbtable.table;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.aotuman.nbtable.HorizontalBean;
 import com.aotuman.nbtable.R;
-import com.aotuman.nbtable.XWLayoutManager;
-import com.aotuman.nbtable.XWRecyclerViewAdapter;
-import com.aotuman.nbtable.util.DensityUtil;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class XWTableView extends RelativeLayout {
 
-    private LinearLayout titleLayout;
-    private RecyclerView recyclerView;
+    private XWTableHeaderLayout headerLayout;
+    private RecyclerView contentRV;
     private XWLayoutManager xwLayoutManager;
-    private XWTableRowViewAdapter adapter;
+    private XWTableRowViewAdapter rowViewAdapter;
     private List<XWTableColumn> tableColumns;
+    private int tableWidth;
+    private int freezeColumns;
+    private static final float Z_ORDER_VALUE = 3f;
 
     public XWTableView(Context context, List<XWTableColumn> tableColumns) {
         super(context);
@@ -47,43 +47,91 @@ public class XWTableView extends RelativeLayout {
 
     private void init(Context context) {
         LayoutInflater.from(context).inflate(R.layout.tableview, this);
-        titleLayout = findViewById(R.id.titleLayout);
-        recyclerView = findViewById(R.id.recyclerView);
-        adapter = new XWTableRowViewAdapter(recyclerView,tableColumns,testAddColumnViews());
-        addTitleColumns(tableColumns);
+        headerLayout = findViewById(R.id.headerLayout);
+        contentRV = findViewById(R.id.recyclerView);
+        rowViewAdapter = new XWTableRowViewAdapter(contentRV, tableColumns);
+        headerLayout.addColumnViews(tableColumns, constructColumnViews(tableColumns));
+        contentRV.addOnScrollListener(contentRVScrollListener);
     }
 
-    private List<View> testAddColumnViews(){
+    public void setFreezeColumns(int freezeColumns) {
+        this.freezeColumns = freezeColumns;
+        xwLayoutManager.setFreezeColumns(freezeColumns);
+    }
+
+    public void setTableWidth(int tableWidth) {
+        this.tableWidth = tableWidth;
+        xwLayoutManager = new XWLayoutManager(getContext(), tableWidth);
+        contentRV.setLayoutManager(xwLayoutManager);
+    }
+
+    public void setTableData() {
+        contentRV.setAdapter(rowViewAdapter);
+        List<XWTableData> beans = XWTableData.initDatas();
+        rowViewAdapter.setData(beans);
+    }
+
+    private List<View> constructColumnViews(List<XWTableColumn> columns) {
         List<View> viewList = new ArrayList<>();
-        if (tableColumns != null && tableColumns.size() > 0) {
-            for (XWTableColumn tableColumn : tableColumns) {
+        if (columns != null && columns.size() > 0) {
+            for (XWTableColumn tableColumn : columns) {
                 TextView textView = new TextView(getContext());
-                textView.setHeight(DensityUtil.dip2px(getContext(),50));
+                textView.setText(tableColumn.getTitle());
+                textView.setGravity(Gravity.CENTER);
                 viewList.add(textView);
             }
         }
         return viewList;
     }
 
-    public void setTableWidth(int tableWidth) {
-        xwLayoutManager = new XWLayoutManager(getContext(), tableWidth);
-        recyclerView.setLayoutManager(xwLayoutManager);
-    }
+    private int mHorizontalOffset;//横向偏移量
 
-    public void setTableData() {
-        recyclerView.setAdapter(adapter);
-        List<XWTableData> beans = XWTableData.initDatas();
-        adapter.setData(beans);
-    }
+    private RecyclerView.OnScrollListener contentRVScrollListener = new RecyclerView.OnScrollListener() {
+        @Override
+        public void onScrollStateChanged(@NonNull RecyclerView recyclerView, int newState) {
+            super.onScrollStateChanged(recyclerView, newState);
+        }
 
-    private void addTitleColumns(List<XWTableColumn> tableColumns) {
-        if (tableColumns != null && tableColumns.size() > 0) {
-            for (XWTableColumn tableColumn : tableColumns) {
-                TextView textView = new TextView(getContext());
-                textView.setText(tableColumn.getTitle());
-                titleLayout.addView(textView, new LinearLayout.LayoutParams(tableColumn.getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT));
+        @Override
+        public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+            super.onScrolled(recyclerView, dx, dy);
+            int realOffset = dx;//实际滑动的距离
+            if (mHorizontalOffset + dx < 0) { //左边界
+                realOffset = -mHorizontalOffset;
+            } else {
+                int maxScrollWidth = tableWidth - getWidth();
+                if (mHorizontalOffset + dx >= maxScrollWidth) { // 右边界
+                    realOffset = maxScrollWidth - mHorizontalOffset;
+                }
+            }
+            mHorizontalOffset += realOffset;//累加实际滑动距离
+
+            if (freezeColumns > 0) {
+                offsetFreezeColumnHorizontal(realOffset);
+            } else {
+                headerLayout.scrollBy(realOffset, 0);
+            }
+        }
+    };
+
+    /**
+     * 平移冻结列
+     *
+     * @param dx
+     */
+    private void offsetFreezeColumnHorizontal(int dx) {
+        if (headerLayout != null) {
+            for (int i = 0; i < freezeColumns; i++) {
+                View childView = headerLayout.getChildAt(i);
+                if (childView != null) {
+                    // 设置z轴的值，才能覆盖其他view
+                    childView.setZ(Z_ORDER_VALUE);
+                }
+            }
+            for (int i = freezeColumns; i < headerLayout.getChildCount(); i++) {
+                View view = headerLayout.getChildAt(i);
+                view.offsetLeftAndRight(-dx);
             }
         }
     }
-
 }

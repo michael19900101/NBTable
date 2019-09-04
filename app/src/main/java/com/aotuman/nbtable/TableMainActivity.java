@@ -30,17 +30,18 @@ public class TableMainActivity extends AppCompatActivity {
             totalWidth += tableColumn.getWidth();
         }
         tableView.setTableWidth(totalWidth);
+        tableView.setFreezeColumns(1);
         tableView.setTableData();
     }
 
     private void constrcutColumnDatas(){
         columns = new ArrayList<>();
-        columns.add(new XWTableColumn("列1",DensityUtil.dip2px(this,100),DensityUtil.dip2px(this,50)));
-        columns.add(new XWTableColumn("列2",DensityUtil.dip2px(this,120),DensityUtil.dip2px(this,50)));
-        columns.add(new XWTableColumn("列3",DensityUtil.dip2px(this,130),DensityUtil.dip2px(this,50)));
-        columns.add(new XWTableColumn("列4",DensityUtil.dip2px(this,90),DensityUtil.dip2px(this,50)));
-        columns.add(new XWTableColumn("列5",DensityUtil.dip2px(this,110),DensityUtil.dip2px(this,50)));
-        columns.add(new XWTableColumn("列6",DensityUtil.dip2px(this,80),DensityUtil.dip2px(this,50)));
-        columns.add(new XWTableColumn("列7",DensityUtil.dip2px(this,100),DensityUtil.dip2px(this,50)));
+        columns.add(new XWTableColumn("列0",DensityUtil.dip2px(this,100),DensityUtil.dip2px(this,50)));
+        columns.add(new XWTableColumn("列1",DensityUtil.dip2px(this,120),DensityUtil.dip2px(this,50)));
+        columns.add(new XWTableColumn("列2",DensityUtil.dip2px(this,130),DensityUtil.dip2px(this,50)));
+        columns.add(new XWTableColumn("列3",DensityUtil.dip2px(this,90),DensityUtil.dip2px(this,50)));
+        columns.add(new XWTableColumn("列4",DensityUtil.dip2px(this,110),DensityUtil.dip2px(this,50)));
+        columns.add(new XWTableColumn("列5",DensityUtil.dip2px(this,80),DensityUtil.dip2px(this,50)));
+        columns.add(new XWTableColumn("列6",DensityUtil.dip2px(this,100),DensityUtil.dip2px(this,50)));
     }
 }

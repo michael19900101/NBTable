@@ -1,6 +1,7 @@
 package com.aotuman.nbtable.table;
 
 import android.content.Context;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -9,6 +10,7 @@ import android.widget.TextView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.aotuman.nbtable.R;
+import com.aotuman.nbtable.util.DensityUtil;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -19,10 +21,8 @@ public class XWTableRowViewAdapter extends RecyclerView.Adapter<XWTableRowViewAd
     private List<XWTableData> dataList = new ArrayList<>();
     private RecyclerView recyclerView;
     private List<XWTableColumn> columns;
-    private List<View> columnViews;
 
-    public XWTableRowViewAdapter(RecyclerView recyclerView, List<XWTableColumn> columns, List<View> columnViews) {
-        this.columnViews = columnViews;
+    public XWTableRowViewAdapter(RecyclerView recyclerView, List<XWTableColumn> columns) {
         this.columns = columns;
         this.recyclerView = recyclerView;
         this.mContext = recyclerView.getContext();
@@ -39,6 +39,7 @@ public class XWTableRowViewAdapter extends RecyclerView.Adapter<XWTableRowViewAd
     @Override
     public XWTableRowViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         XWTableRowLayout tableRowLayout = (XWTableRowLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.table_row_view, parent, false);
+        List<View> columnViews = testAddColumnViews(columns);
         tableRowLayout.addColumnViews(columns, columnViews);
         return new XWTableRowViewHolder(tableRowLayout);
     }
@@ -66,6 +67,19 @@ public class XWTableRowViewAdapter extends RecyclerView.Adapter<XWTableRowViewAd
         private XWTableRowViewHolder(View itemView) {
             super(itemView);
         }
+    }
+
+    private List<View> testAddColumnViews(List<XWTableColumn> columns){
+        List<View> viewList = new ArrayList<>();
+        if (columns != null && columns.size() > 0) {
+            for (XWTableColumn tableColumn : columns) {
+                TextView textView = new TextView(mContext);
+                textView.setHeight(DensityUtil.dip2px(mContext,50));
+                textView.setGravity(Gravity.CENTER);
+                viewList.add(textView);
+            }
+        }
+        return viewList;
     }
 
 }

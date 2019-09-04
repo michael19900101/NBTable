@@ -6,15 +6,15 @@
     android:layout_height="wrap_content"
     tools:context=".MainActivity">
 
-    <LinearLayout
-        android:id="@+id/titleLayout"
+    <com.aotuman.nbtable.table.XWTableHeaderLayout
+        android:id="@+id/headerLayout"
         android:orientation="horizontal"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"/>
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/recyclerView"
-        android:layout_below="@+id/titleLayout"
+        android:layout_below="@+id/headerLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content" />
 
