@@ -5,7 +5,6 @@ import android.util.AttributeSet;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -52,6 +51,7 @@ public class XWTableView extends RelativeLayout {
         rowViewAdapter = new XWTableRowViewAdapter(contentRV, tableColumns);
         headerLayout.addColumnViews(tableColumns, constructColumnViews(tableColumns));
         contentRV.addOnScrollListener(contentRVScrollListener);
+        headerLayout.addOnLayoutChangeListener(headerLayoutChangeListener);
     }
 
     public void setFreezeColumns(int freezeColumns) {
@@ -134,4 +134,30 @@ public class XWTableView extends RelativeLayout {
             }
         }
     }
+
+    /**
+     * 头部布局变化监听器
+     * 键盘弹起会引起重新布局，此时头部布局要与内容布局保持一致的宽度偏移
+     */
+    private OnLayoutChangeListener headerLayoutChangeListener = new OnLayoutChangeListener() {
+        @Override
+        public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
+            if(Math.abs(mHorizontalOffset) > 0){
+                int realOffset = 0;//实际滑动的距离
+                if (mHorizontalOffset < 0) { //左边界
+                    realOffset = -mHorizontalOffset;
+                } else {
+                    int maxScrollWidth = tableWidth - getWidth();
+                    if (mHorizontalOffset >= maxScrollWidth) { // 右边界
+                        realOffset = maxScrollWidth - mHorizontalOffset;
+                    }
+                }
+                if (freezeColumns > 0) {
+                    offsetFreezeColumnHorizontal(mHorizontalOffset);
+                } else {
+                    headerLayout.scrollBy(realOffset, 0);
+                }
+            }
+        }
+    };
 }

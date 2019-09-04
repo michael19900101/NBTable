@@ -202,7 +202,7 @@ public class FlowLayoutManager extends RecyclerView.LayoutManager {
         }
 
 
-        Log.d("TAG", "count= [" + getChildCount() + "]" + ",[recycler.getScrapList().size():" + recycler.getScrapList().size() + ", dy:" + dy + ",  mVerticalOffset" + mVerticalOffset + ", ");
+        Log.d("TAG", "count= [" + getChildCount() + "]" + ",[recycler.getScrapList().size():" + recycler.getScrapList().size() + ", dy:" + dy + ",  mVerticalOffset:" + mVerticalOffset + ", ");
 
         return dy;
     }

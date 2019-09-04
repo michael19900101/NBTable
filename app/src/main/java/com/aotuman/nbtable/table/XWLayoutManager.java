@@ -40,20 +40,22 @@ public class XWLayoutManager extends RecyclerView.LayoutManager {
             detachAndScrapAttachedViews(recycler);
             return;
         }
-        if (getChildCount() == 0 && state.isPreLayout()) {//state.isPreLayout()是支持动画的
+        if (state.isPreLayout()) {//state.isPreLayout()是支持动画的
             return;
         }
-        //onLayoutChildren方法在RecyclerView 初始化时 会执行两遍
-        detachAndScrapAttachedViews(recycler);
+        if (getChildCount() == 0){
+            //onLayoutChildren方法在RecyclerView 初始化时 会执行两遍
+            detachAndScrapAttachedViews(recycler);
 
-        //初始化区域
-        mHorizontalOffset = 0;
-        mVerticalOffset = 0;
-        mFirstVisiPos = 0;
-        mLastVisiPos = getItemCount();
+            //初始化区域
+            mHorizontalOffset = 0;
+            mVerticalOffset = 0;
+            mFirstVisiPos = 0;
+            mLastVisiPos = getItemCount();
 
-        //初始化时调用 填充childView
-        fill(recycler, state);
+            //初始化时调用 填充childView
+            fill(recycler, state);
+        }
     }
 
     /**
@@ -343,27 +345,31 @@ public class XWLayoutManager extends RecyclerView.LayoutManager {
             for (int i = maxPos; i >= mFirstVisiPos; i--) {
                 Rect rect = mItemRects.get(i);
 
-                if (rect.bottom - mVerticalOffset - dy < getPaddingTop()) {
-                    mFirstVisiPos = i + 1;
-                    break;
-                } else {
-                    View child = recycler.getViewForPosition(i);
-                    if (child != null) {
-                        child.getLayoutParams().width = rowWidth;
-                    }
-                    addView(child, 0);//将View添加至RecyclerView中，childIndex为1，但是View的位置还是由layout的位置决定
-                    measureChildWithMargins(child, 0, 0);
+                if (rect != null) {
+                    if (rect.bottom - mVerticalOffset - dy < getPaddingTop()) {
+                        mFirstVisiPos = i + 1;
+                        break;
+                    } else {
+                        View child = recycler.getViewForPosition(i);
+                        if (child != null) {
+                            child.getLayoutParams().width = rowWidth;
+                        }
+                        addView(child, 0);//将View添加至RecyclerView中，childIndex为1，但是View的位置还是由layout的位置决定
+                        measureChildWithMargins(child, 0, 0);
 
-                    layoutDecoratedWithMargins(child, rect.left - mHorizontalOffset,
-                            rect.top - mVerticalOffset,
-                            rect.right - mHorizontalOffset,
-                            rect.bottom - mVerticalOffset);
+                        layoutDecoratedWithMargins(child, rect.left - mHorizontalOffset,
+                                rect.top - mVerticalOffset,
+                                rect.right - mHorizontalOffset,
+                                rect.bottom - mVerticalOffset);
+                    }
                 }
             }
         }
 
 
-        Log.d("TAG", "count= [" + getChildCount() + "]" + ",[recycler.getScrapList().size():" + recycler.getScrapList().size() + ", dy:" + dy + ",  mVerticalOffset" + mVerticalOffset + ", ");
+        Log.d("TAG", "count= [" + getChildCount() + "]" + ",[recycler.getScrapList().size():"
+                + recycler.getScrapList().size() + ", dy:" + dy + ",  mVerticalOffset:" + mVerticalOffset + ", "
+                + ", dx:" + dx + ", mHorizontalOffset:" + mHorizontalOffset);
 
         return dy;
     }
