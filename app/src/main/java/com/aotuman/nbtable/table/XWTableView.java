@@ -20,7 +20,7 @@ import java.util.List;
 public class XWTableView extends RelativeLayout {
 
     private XWTableHeaderLayout headerLayout;
-    private RecyclerView contentRV;
+    private XWTableRecyclerview contentRV;
     private XWLayoutManager xwLayoutManager;
     private XWTableRowViewAdapter rowViewAdapter;
     private List<XWTableColumn> tableColumns;
