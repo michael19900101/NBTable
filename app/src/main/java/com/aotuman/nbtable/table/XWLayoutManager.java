@@ -252,6 +252,16 @@ public class XWLayoutManager extends RecyclerView.LayoutManager {
      */
     private int fill(RecyclerView.Recycler recycler, RecyclerView.State state, int dx, int dy) {
 
+        // 现在依附在rv的child数量 等于 总的数据量
+        if (getChildCount() == getItemCount()){
+            View lastVisiView = getChildAt(getChildCount() - 1);
+            if(lastVisiView != null){
+                // 如果数据行总高度小于表格高度，没必要重新布局和竖向移动
+                if(lastVisiView.getBottom() < getHeight()){
+                    return 0;
+                }
+            }
+        }
         int topOffset = getPaddingTop();
 
         //回收越界子View
