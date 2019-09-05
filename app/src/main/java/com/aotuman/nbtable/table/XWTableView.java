@@ -95,21 +95,23 @@ public class XWTableView extends RelativeLayout {
         @Override
         public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
             super.onScrolled(recyclerView, dx, dy);
-            int realOffset = dx;//实际滑动的距离
-            if (mHorizontalOffset + dx < 0) { //左边界
-                realOffset = -mHorizontalOffset;
-            } else {
-                int maxScrollWidth = tableWidth - getWidth();
-                if (mHorizontalOffset + dx >= maxScrollWidth) { // 右边界
-                    realOffset = maxScrollWidth - mHorizontalOffset;
+            if(headerLayout != null && headerLayout.getVisibility() == VISIBLE){
+                int realOffset = dx;//实际滑动的距离
+                if (mHorizontalOffset + dx < 0) { //左边界
+                    realOffset = -mHorizontalOffset;
+                } else {
+                    int maxScrollWidth = tableWidth - getWidth();
+                    if (mHorizontalOffset + dx >= maxScrollWidth) { // 右边界
+                        realOffset = maxScrollWidth - mHorizontalOffset;
+                    }
                 }
-            }
-            mHorizontalOffset += realOffset;//累加实际滑动距离
+                mHorizontalOffset += realOffset;//累加实际滑动距离
 
-            if (freezeColumns > 0) {
-                offsetFreezeColumnHorizontal(realOffset);
-            } else {
-                headerLayout.scrollBy(realOffset, 0);
+                if (freezeColumns > 0) {
+                    offsetFreezeColumnHorizontal(realOffset);
+                } else {
+                    headerLayout.scrollBy(realOffset, 0);
+                }
             }
         }
     };
@@ -120,18 +122,16 @@ public class XWTableView extends RelativeLayout {
      * @param dx
      */
     private void offsetFreezeColumnHorizontal(int dx) {
-        if (headerLayout != null) {
-            for (int i = 0; i < freezeColumns; i++) {
-                View childView = headerLayout.getChildAt(i);
-                if (childView != null) {
-                    // 设置z轴的值，才能覆盖其他view
-                    childView.setZ(Z_ORDER_VALUE);
-                }
+        for (int i = 0; i < freezeColumns; i++) {
+            View childView = headerLayout.getChildAt(i);
+            if (childView != null) {
+                // 设置z轴的值，才能覆盖其他view
+                childView.setZ(Z_ORDER_VALUE);
             }
-            for (int i = freezeColumns; i < headerLayout.getChildCount(); i++) {
-                View view = headerLayout.getChildAt(i);
-                view.offsetLeftAndRight(-dx);
-            }
+        }
+        for (int i = freezeColumns; i < headerLayout.getChildCount(); i++) {
+            View view = headerLayout.getChildAt(i);
+            view.offsetLeftAndRight(-dx);
         }
     }
 
@@ -142,20 +142,22 @@ public class XWTableView extends RelativeLayout {
     private OnLayoutChangeListener headerLayoutChangeListener = new OnLayoutChangeListener() {
         @Override
         public void onLayoutChange(View v, int left, int top, int right, int bottom, int oldLeft, int oldTop, int oldRight, int oldBottom) {
-            if(Math.abs(mHorizontalOffset) > 0){
-                int realOffset = 0;//实际滑动的距离
-                if (mHorizontalOffset < 0) { //左边界
-                    realOffset = -mHorizontalOffset;
-                } else {
-                    int maxScrollWidth = tableWidth - getWidth();
-                    if (mHorizontalOffset >= maxScrollWidth) { // 右边界
-                        realOffset = maxScrollWidth - mHorizontalOffset;
+            if(headerLayout != null && headerLayout.getVisibility() == VISIBLE){
+                if(Math.abs(mHorizontalOffset) > 0){
+                    int realOffset = 0;//实际滑动的距离
+                    if (mHorizontalOffset < 0) { //左边界
+                        realOffset = -mHorizontalOffset;
+                    } else {
+                        int maxScrollWidth = tableWidth - getWidth();
+                        if (mHorizontalOffset >= maxScrollWidth) { // 右边界
+                            realOffset = maxScrollWidth - mHorizontalOffset;
+                        }
                     }
-                }
-                if (freezeColumns > 0) {
-                    offsetFreezeColumnHorizontal(mHorizontalOffset);
-                } else {
-                    headerLayout.scrollBy(realOffset, 0);
+                    if (freezeColumns > 0) {
+                        offsetFreezeColumnHorizontal(mHorizontalOffset);
+                    } else {
+                        headerLayout.scrollBy(realOffset, 0);
+                    }
                 }
             }
         }
