@@ -197,12 +197,13 @@ public class XWTableView extends RelativeLayout {
     }
 
     /**
-     * 平移冻结列
+     * 有冻结列的平移方式
      * @param viewGroup
      * @param dx
      */
     private void offsetFreezeColumnHorizontal(ViewGroup viewGroup, int dx) {
         if (viewGroup != null && viewGroup.getVisibility() == VISIBLE) {
+            // 冻结列不用平移
             for (int i = 0; i < freezeColumns; i++) {
                 View childView = viewGroup.getChildAt(i);
                 if (childView != null) {
@@ -210,15 +211,17 @@ public class XWTableView extends RelativeLayout {
                     childView.setZ(Z_ORDER_VALUE);
                 }
             }
+            // 平移非冻结列
             for (int i = freezeColumns; i < viewGroup.getChildCount(); i++) {
                 View view = viewGroup.getChildAt(i);
                 view.offsetLeftAndRight(-dx);
             }
+            viewGroup.invalidate();
         }
     }
 
     /**
-     * 平移非冻结列
+     * 没有冻结列的平移方式
      * @param viewGroup
      * @param dx
      */
