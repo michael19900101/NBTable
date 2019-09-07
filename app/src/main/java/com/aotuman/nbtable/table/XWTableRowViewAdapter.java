@@ -40,7 +40,7 @@ public class XWTableRowViewAdapter extends RecyclerView.Adapter<XWTableRowViewAd
     @Override
     public XWTableRowViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         XWTableRowLayout tableRowLayout = (XWTableRowLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.table_row_view, parent, false);
-        List<View> columnViews = testAddColumnViews(columns);
+        List<View> columnViews = testAddColumnViews2(columns);
         tableRowLayout.addColumnViews(columns, columnViews);
         return new XWTableRowViewHolder(tableRowLayout);
     }
@@ -70,12 +70,35 @@ public class XWTableRowViewAdapter extends RecyclerView.Adapter<XWTableRowViewAd
         }
     }
 
-    private List<View> testAddColumnViews(List<XWTableColumn> columns){
+    private List<View> testAddColumnViews(List<XWTableColumn> columns) {
         List<View> viewList = new ArrayList<>();
         if (columns != null && columns.size() > 0) {
             for (XWTableColumn tableColumn : columns) {
                 TextView textView = new TextView(mContext);
-                textView.setHeight(DensityUtil.dip2px(mContext,50));
+                textView.setHeight(DensityUtil.dip2px(mContext, 50));
+                textView.setGravity(Gravity.CENTER);
+                viewList.add(textView);
+            }
+        }
+        return viewList;
+    }
+
+    private List<View> testAddColumnViews2(List<XWTableColumn> columns) {
+        List<View> viewList = new ArrayList<>();
+        if (columns != null && columns.size() > 0) {
+            for (int i = 0; i < columns.size(); i++) {
+                TextView textView = new TextView(mContext);
+                int height = DensityUtil.dip2px(mContext, 50);
+                if (i == 0) {
+                    height = DensityUtil.dip2px(mContext, 30);
+                }
+                if (i == 3) {
+                    height = DensityUtil.dip2px(mContext, 40);
+                }
+                if (i == 5) {
+                    height = DensityUtil.dip2px(mContext, 90);
+                }
+                textView.setHeight(height);
                 textView.setGravity(Gravity.CENTER);
                 viewList.add(textView);
             }
