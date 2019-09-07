@@ -18,6 +18,8 @@ import java.util.Map;
 
 public class XWTableRowLayout extends LinearLayout {
 
+    private int minRowHeight = 0;
+    private int cellPadding = 0;
     private Map<XWTableColumn, View> columnViewMap = new HashMap<>();
 
     public XWTableRowLayout(Context context) {
@@ -36,6 +38,8 @@ public class XWTableRowLayout extends LinearLayout {
     }
 
     private void init(Context context) {
+        minRowHeight = (int) getResources().getDimension(R.dimen.table_min_row_height);
+        cellPadding = (int) getResources().getDimension(R.dimen.table_cell_padding);
     }
 
     public void addColumnViews(List<XWTableColumn> columns, List<View> columnViews) {
@@ -52,6 +56,8 @@ public class XWTableRowLayout extends LinearLayout {
                     }
                     // 单元格内容view，宽高都是填满父布局
                     columnViews.get(i).setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+                    // 单元格内容设置padding
+                    columnViews.get(i).setPadding(cellPadding,cellPadding,cellPadding,cellPadding);
                     // 在单元格里面添加内容view
                     cellLayout.addView(columnViews.get(i));
                 }
@@ -81,7 +87,7 @@ public class XWTableRowLayout extends LinearLayout {
         measureChildren(widthMeasureSpec, heightMeasureSpec);
 
         // 以最大的cell高度为行高
-        int maxCellHeight = 0;
+        int maxCellHeight = minRowHeight;
         for (int i = 0; i < getChildCount(); i++) {
             View cellLayout = getChildAt(i);
             int cellHeight = cellLayout.getMeasuredHeight();
