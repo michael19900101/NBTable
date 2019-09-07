@@ -24,7 +24,7 @@ public class XWTableView extends RelativeLayout {
     private XWTableHeaderLayout headerLayout;
     private XWTableRecyclerview contentRV;
     private XWTableBottomLayout bottomLayout;
-    private XWLayoutManager xwLayoutManager;
+    private XWTableLayoutManager xwTableLayoutManager;
     private XWTableRowViewAdapter rowViewAdapter;
     private List<XWTableColumn> tableColumns;
     private int tableWidth;
@@ -128,13 +128,13 @@ public class XWTableView extends RelativeLayout {
 
     public void setFreezeColumns(int freezeColumns) {
         this.freezeColumns = freezeColumns;
-        xwLayoutManager.setFreezeColumns(freezeColumns);
+        xwTableLayoutManager.setFreezeColumns(freezeColumns);
     }
 
     public void setTableWidth(int tableWidth) {
         this.tableWidth = tableWidth;
-        xwLayoutManager = new XWLayoutManager(getContext(), tableWidth);
-        contentRV.setLayoutManager(xwLayoutManager);
+        xwTableLayoutManager = new XWTableLayoutManager(getContext(), tableWidth);
+        contentRV.setLayoutManager(xwTableLayoutManager);
     }
 
     public void setTableData() {

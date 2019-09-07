@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 
 import androidx.recyclerview.widget.RecyclerView;
 
-public class XWLayoutManager extends RecyclerView.LayoutManager {
+public class XWTableLayoutManager extends RecyclerView.LayoutManager {
     private static final float Z_ORDER_VALUE = 3f;
     private int mHorizontalOffset;//横向偏移量
     private int mVerticalOffset;//竖直偏移量 每次换行时，要根据这个offset判断
@@ -19,7 +19,7 @@ public class XWLayoutManager extends RecyclerView.LayoutManager {
     private int freezeColumns = 0;//冻结列数
     private SparseArray<Rect> mItemRects;//key 是View的position，保存View的bounds 和 显示标志，
 
-    public XWLayoutManager(Context context, int rowWidth) {
+    public XWTableLayoutManager(Context context, int rowWidth) {
         this.rowWidth = rowWidth;
         mItemRects = new SparseArray<>();
     }
