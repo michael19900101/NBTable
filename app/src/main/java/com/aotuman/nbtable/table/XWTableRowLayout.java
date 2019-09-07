@@ -44,8 +44,8 @@ public class XWTableRowLayout extends LinearLayout {
             for (int i = 0; i < columns.size(); i++) {
                 // 表格单元格外层布局
                 XWTableCellLayout cellLayout = (XWTableCellLayout) LayoutInflater.from(getContext()).inflate(R.layout.table_cell_view, this, false);
-                // 宽度固定，高度内容填充(后面遍历单元格，算出最大的单元格高度为行高)
-                cellLayout.setLayoutParams(new ViewGroup.LayoutParams(columns.get(i).getWidth(), ViewGroup.LayoutParams.WRAP_CONTENT));
+                // 宽度固定，高度填充父布局(后面遍历单元格，算出最大的单元格高度为行高)
+                cellLayout.setLayoutParams(new ViewGroup.LayoutParams(columns.get(i).getWidth(), ViewGroup.LayoutParams.MATCH_PARENT));
                 if (columnViews.get(i) != null) {
                     if (columnViews.get(i).getParent() != null) {
                         ((ViewGroup) (columnViews.get(i).getParent())).removeView(columnViews.get(i));

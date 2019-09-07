@@ -15,7 +15,7 @@ public class XWTableData {
     public static List<XWTableData> initDatas() {
         List<XWTableData> datas = new ArrayList<>();
         for (int i = 0;i < 1000;i ++){
-            datas.add(new XWTableData(i, "第"+i+"行"));
+            datas.add(new XWTableData(i, "第"+i+"行1234567890123456787901234567679"));
         }
 
         return datas;

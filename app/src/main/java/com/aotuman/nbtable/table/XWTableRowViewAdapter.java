@@ -40,7 +40,7 @@ public class XWTableRowViewAdapter extends RecyclerView.Adapter<XWTableRowViewAd
     @Override
     public XWTableRowViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         XWTableRowLayout tableRowLayout = (XWTableRowLayout) LayoutInflater.from(parent.getContext()).inflate(R.layout.table_row_view, parent, false);
-        List<View> columnViews = testAddColumnViews2(columns);
+        List<View> columnViews = testAddColumnViews(columns);
         tableRowLayout.addColumnViews(columns, columnViews);
         return new XWTableRowViewHolder(tableRowLayout);
     }
@@ -53,7 +53,7 @@ public class XWTableRowViewAdapter extends RecyclerView.Adapter<XWTableRowViewAd
         for (Map.Entry<XWTableColumn, View> entry : columnViewMap.entrySet()) {
             View view = entry.getValue();
             if (view instanceof TextView) {
-                ((TextView) view).setText(item.getName() + entry.getKey().getTitle());
+                ((TextView) view).setText(item.getName() +  "\n" + entry.getKey().getTitle());
             }
         }
     }
@@ -75,7 +75,6 @@ public class XWTableRowViewAdapter extends RecyclerView.Adapter<XWTableRowViewAd
         if (columns != null && columns.size() > 0) {
             for (XWTableColumn tableColumn : columns) {
                 TextView textView = new TextView(mContext);
-                textView.setHeight(DensityUtil.dip2px(mContext, 50));
                 textView.setGravity(Gravity.CENTER);
                 viewList.add(textView);
             }
