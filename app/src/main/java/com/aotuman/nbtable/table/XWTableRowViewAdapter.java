@@ -74,7 +74,7 @@ public class XWTableRowViewAdapter extends RecyclerView.Adapter<XWTableRowViewAd
         List<View> viewList = new ArrayList<>();
         if (columns != null && columns.size() > 0) {
             for (XWTableColumn tableColumn : columns) {
-                TextView textView = new TextView(mContext);
+                EditText textView = new EditText(mContext);
                 textView.setGravity(Gravity.CENTER);
                 viewList.add(textView);
             }
@@ -105,4 +105,7 @@ public class XWTableRowViewAdapter extends RecyclerView.Adapter<XWTableRowViewAd
         return viewList;
     }
 
+    public List<XWTableData> getDataList() {
+        return dataList;
+    }
 }

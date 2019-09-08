@@ -8,6 +8,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -164,6 +165,19 @@ public class XWTableView extends RelativeLayout {
                 textView.setText("统计" + i);
                 textView.setGravity(Gravity.CENTER);
                 viewList.add(textView);
+                if(i == 0){
+                    textView.setOnClickListener(new OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            Toast.makeText(getContext(),"tttt",Toast.LENGTH_SHORT).show();
+                            XWTableData xwTableData = rowViewAdapter.getDataList().get(0);
+                            xwTableData.setName("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                                    "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
+//                            rowViewAdapter.notifyItemChanged(0);
+                            rowViewAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
             }
         }
         return viewList;

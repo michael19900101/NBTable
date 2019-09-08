@@ -55,6 +55,11 @@ public class XWTableLayoutManager extends RecyclerView.LayoutManager {
 
             //初始化时调用 填充childView
             fill(recycler, state);
+        }else {
+            // 可能由于键盘弹起，布局发生变化，或者调用notifyItemChanged,数据发生变化
+            // 此时我们只需要刷新当前显示区域的数据
+            // todo 刷新数据可能会引起行高发生变化，mItemRects保存位置的数据相应的做修改，要不然行高还是不变（逆序会恢复）
+            refreshCurVisiRegion(recycler, state, mHorizontalOffset, mVerticalOffset);
         }
     }
 
@@ -384,7 +389,71 @@ public class XWTableLayoutManager extends RecyclerView.LayoutManager {
         return dy;
     }
 
-    //模仿LLM Horizontal 源码
+
+    private void refreshCurVisiRegion(RecyclerView.Recycler recycler, RecyclerView.State state, int dx, int dy) {
+
+        int firstVisiPos = 0;
+        int lastVisiPos = 0;
+        int topOffset = 0;
+        int leftOffset = getPaddingLeft();
+        //布局子View阶段
+        if (dy >= 0) {
+
+            View fisrtVisibleView = getChildAt(0);
+            firstVisiPos = getPosition(fisrtVisibleView);
+            lastVisiPos = getPosition(getChildAt(getChildCount() - 1));
+            topOffset += fisrtVisibleView.getTop();
+            leftOffset += fisrtVisibleView.getLeft();
+
+            detachAndScrapAttachedViews(recycler);
+            //顺序addChildView
+            for (int i = firstVisiPos; i <= lastVisiPos; i++) {
+                //找recycler要一个childItemView,我们不管它是从scrap里取，还是从RecyclerViewPool里取，亦或是onCreateViewHolder里拿。
+                View child = recycler.getViewForPosition(i);
+                if (child != null) {
+                    child.getLayoutParams().width = rowWidth;
+                }
+                addView(child);
+                measureChildWithMargins(child, 0, 0);
+
+                layoutDecoratedWithMargins(child,
+                        leftOffset,
+                        topOffset,
+                        leftOffset + getDecoratedMeasurementHorizontal(child),
+                        topOffset + getDecoratedMeasurementVertical(child));
+
+                //改变lineHeight
+                topOffset += getDecoratedMeasurementVertical(child);
+            }
+        }
+
+        if (freezeColumns > 0){
+            if (getChildCount() > 0) {
+                for (int i = 0; i < getChildCount(); i++) {
+                    View rowView = getChildAt(i);
+                    if (rowView != null) {
+                        for (int j = 0; j < freezeColumns; j++) {
+                            int offsetChildWidth = 0;
+                            for (int k = j - 1; k >= 0; k--) {
+                                View childView = ((ViewGroup) rowView).getChildAt(k);
+                                if (childView != null) {
+                                    offsetChildWidth += childView.getMeasuredWidth();
+                                }
+                            }
+                            View childView = ((ViewGroup) rowView).getChildAt(j);
+                            if (childView != null) {
+                                // 设置z轴的值，才能覆盖其他view
+                                childView.setZ(Z_ORDER_VALUE);
+                                int horizontalOffset = leftOffset - childView.getLeft() + offsetChildWidth;
+                                childView.offsetLeftAndRight(-horizontalOffset);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+    }
 
     /**
      * 获取某个childView在水平方向所占的空间
