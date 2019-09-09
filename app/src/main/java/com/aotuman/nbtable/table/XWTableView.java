@@ -165,11 +165,11 @@ public class XWTableView extends RelativeLayout {
                 textView.setText("统计" + i);
                 textView.setGravity(Gravity.CENTER);
                 viewList.add(textView);
-                if(i == 0){
+                if (i == 0) {
                     textView.setOnClickListener(new OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            Toast.makeText(getContext(),"tttt",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(getContext(), "tttt", Toast.LENGTH_SHORT).show();
                             XWTableData xwTableData = rowViewAdapter.getDataList().get(0);
                             xwTableData.setName("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
                                     "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
@@ -185,7 +185,8 @@ public class XWTableView extends RelativeLayout {
 
     /**
      * 横向滑动表头和底部布局
-     * @param head 表头布局
+     *
+     * @param head   表头布局
      * @param bottom 底部布局
      * @param dx
      */
@@ -212,6 +213,7 @@ public class XWTableView extends RelativeLayout {
 
     /**
      * 有冻结列的平移方式
+     *
      * @param viewGroup
      * @param dx
      */
@@ -236,6 +238,7 @@ public class XWTableView extends RelativeLayout {
 
     /**
      * 没有冻结列的平移方式
+     *
      * @param viewGroup
      * @param dx
      */

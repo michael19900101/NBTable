@@ -53,7 +53,7 @@ public class XWTableRowViewAdapter extends RecyclerView.Adapter<XWTableRowViewAd
         for (Map.Entry<XWTableColumn, View> entry : columnViewMap.entrySet()) {
             View view = entry.getValue();
             if (view instanceof TextView) {
-                ((TextView) view).setText(item.getName() +  "\n" + entry.getKey().getTitle());
+                ((TextView) view).setText(item.getName() + "\n" + entry.getKey().getTitle());
             }
         }
     }
@@ -74,7 +74,7 @@ public class XWTableRowViewAdapter extends RecyclerView.Adapter<XWTableRowViewAd
         List<View> viewList = new ArrayList<>();
         if (columns != null && columns.size() > 0) {
             for (XWTableColumn tableColumn : columns) {
-                EditText textView = new EditText(mContext);
+                TextView textView = new TextView(mContext);
                 textView.setGravity(Gravity.CENTER);
                 viewList.add(textView);
             }

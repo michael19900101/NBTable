@@ -6,6 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 
 import androidx.annotation.Nullable;
 
@@ -42,22 +43,21 @@ public class XWTableRowLayout extends LinearLayout {
         cellPadding = (int) getResources().getDimension(R.dimen.table_cell_padding);
     }
 
+    List<XWTableColumn> columns;
+
     public void addColumnViews(List<XWTableColumn> columns, List<View> columnViews) {
         if (columns != null && columns.size() > 0) {
+            this.columns = columns;
             removeAllViews();
             for (int i = 0; i < columns.size(); i++) {
                 // 表格单元格外层布局
                 XWTableCellLayout cellLayout = (XWTableCellLayout) LayoutInflater.from(getContext()).inflate(R.layout.table_cell_view, this, false);
-                // 宽度固定，高度填充父布局(后面遍历单元格，算出最大的单元格高度为行高)
-                cellLayout.setLayoutParams(new ViewGroup.LayoutParams(columns.get(i).getWidth(), ViewGroup.LayoutParams.MATCH_PARENT));
                 if (columnViews.get(i) != null) {
                     if (columnViews.get(i).getParent() != null) {
                         ((ViewGroup) (columnViews.get(i).getParent())).removeView(columnViews.get(i));
                     }
-                    // 单元格内容view，宽高都是填满父布局
-                    columnViews.get(i).setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
                     // 单元格内容设置padding
-                    columnViews.get(i).setPadding(cellPadding,cellPadding,cellPadding,cellPadding);
+                    columnViews.get(i).setPadding(cellPadding, cellPadding, cellPadding, cellPadding);
                     // 在单元格里面添加内容view
                     cellLayout.addView(columnViews.get(i));
                 }
@@ -83,15 +83,29 @@ public class XWTableRowLayout extends LinearLayout {
         int sizeWidth = MeasureSpec.getSize(widthMeasureSpec);
         int sizeHeight = MeasureSpec.getSize(heightMeasureSpec);
 
-        // 计算出所有的childView的宽和高
-        measureChildren(widthMeasureSpec, heightMeasureSpec);
-
         // 以最大的cell高度为行高
         int maxCellHeight = minRowHeight;
         for (int i = 0; i < getChildCount(); i++) {
             View cellLayout = getChildAt(i);
-            int cellHeight = cellLayout.getMeasuredHeight();
-            maxCellHeight = Math.max(cellHeight, maxCellHeight);
+            // 列宽固定
+            int childWidthMeasureSpec = MeasureSpec.makeMeasureSpec(columns.get(i).getWidth(), MeasureSpec.AT_MOST);
+            // 高度内容填充
+            int childHeightMeasureSpec = MeasureSpec.makeMeasureSpec(0, MeasureSpec.UNSPECIFIED);
+
+            // 每个cellLayout里面只能有一个cellContentView
+            if (cellLayout instanceof ViewGroup && ((ViewGroup) cellLayout).getChildAt(0) != null) {
+                View cellContentView = ((ViewGroup) cellLayout).getChildAt(0);
+                if (cellContentView != null) {
+                    // 重设布局参数，否则会影响测量结果
+                    cellContentView.setLayoutParams(new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.WRAP_CONTENT));
+                    // 测试cellContentView
+                    cellContentView.measure(childWidthMeasureSpec, childHeightMeasureSpec);
+                    // 获取cellContentView的测量高度
+                    int cellContentHeight = cellContentView.getMeasuredHeight();
+                    // 以最大的cell高度为行高
+                    maxCellHeight = Math.max(cellContentHeight, maxCellHeight);
+                }
+            }
         }
 
         for (int i = 0; i < getChildCount(); i++) {
@@ -99,12 +113,12 @@ public class XWTableRowLayout extends LinearLayout {
             if (cellLayout instanceof ViewGroup && ((ViewGroup) cellLayout).getChildAt(0) != null) {
                 View cellContentView = ((ViewGroup) cellLayout).getChildAt(0);
                 // 重设cellContentView的宽度，填充父布局宽度
-                cellContentView.getLayoutParams().width = cellLayout.getMeasuredWidth();
+                cellContentView.getLayoutParams().width = columns.get(i).getWidth();
                 // 重设cellContentView的高度，填充父布局高度
                 cellContentView.getLayoutParams().height = maxCellHeight;
                 // 记得调用一下measure(This is called to find out how big a view should be)，
                 // 这样cellContentView的布局参数才会发生改变
-                cellLayout.measure(cellLayout.getMeasuredWidth(), maxCellHeight);
+                cellLayout.measure(columns.get(i).getWidth(), maxCellHeight);
             }
         }
 
