@@ -157,6 +157,8 @@ public class XWTableView extends RelativeLayout {
         return viewList;
     }
 
+    private boolean flag = false;
+
     private List<View> constructBottomColumnViews(List<XWTableColumn> columns) {
         List<View> viewList = new ArrayList<>();
         if (columns != null && columns.size() > 0) {
@@ -170,9 +172,15 @@ public class XWTableView extends RelativeLayout {
                         @Override
                         public void onClick(View v) {
                             Toast.makeText(getContext(), "tttt", Toast.LENGTH_SHORT).show();
-                            XWTableData xwTableData = rowViewAdapter.getDataList().get(0);
-                            xwTableData.setName("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
-                                    "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
+                            XWTableData xwTableData = rowViewAdapter.getDataList().get(10);
+                            if(flag){
+                                xwTableData.setName("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                                        "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
+                            }else {
+                                xwTableData.setName("x");
+                            }
+                            flag=!flag;
+
 //                            rowViewAdapter.notifyItemChanged(0);
                             rowViewAdapter.notifyDataSetChanged();
                         }

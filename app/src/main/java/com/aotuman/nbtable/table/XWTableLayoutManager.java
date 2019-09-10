@@ -396,16 +396,20 @@ public class XWTableLayoutManager extends RecyclerView.LayoutManager {
         int lastVisiPos = 0;
         int topOffset = 0;
         int leftOffset = getPaddingLeft();
+        int needToScrollDy = 0;
         //布局子View阶段
         if (dy >= 0) {
 
             View fisrtVisibleView = getChildAt(0);
+            View lastVisibleView = getChildAt(getChildCount() - 1);
             firstVisiPos = getPosition(fisrtVisibleView);
-            lastVisiPos = getPosition(getChildAt(getChildCount() - 1));
+            lastVisiPos = getPosition(lastVisibleView);
             topOffset += fisrtVisibleView.getTop();
             leftOffset += fisrtVisibleView.getLeft();
 
             detachAndScrapAttachedViews(recycler);
+            //清除firstVisiPos之后的坐标位置(因为在刷新数据的时候，可视区域的行高可能随数据内容高度发生变化)
+            mItemRects.removeAtRange(firstVisiPos, mItemRects.size() - firstVisiPos);
             //顺序addChildView
             for (int i = firstVisiPos; i <= lastVisiPos; i++) {
                 //找recycler要一个childItemView,我们不管它是从scrap里取，还是从RecyclerViewPool里取，亦或是onCreateViewHolder里拿。
@@ -421,6 +425,13 @@ public class XWTableLayoutManager extends RecyclerView.LayoutManager {
                         topOffset,
                         leftOffset + getDecoratedMeasurementHorizontal(child),
                         topOffset + getDecoratedMeasurementVertical(child));
+
+                //保存Rect供逆序layout用
+                Rect rect = new Rect(leftOffset + mHorizontalOffset,
+                        topOffset + mVerticalOffset,
+                        leftOffset + getDecoratedMeasurementHorizontal(child) + mHorizontalOffset,
+                        topOffset + getDecoratedMeasurementVertical(child) + mVerticalOffset);
+                mItemRects.put(i, rect);
 
                 //改变lineHeight
                 topOffset += getDecoratedMeasurementVertical(child);
@@ -453,6 +464,14 @@ public class XWTableLayoutManager extends RecyclerView.LayoutManager {
             }
         }
 
+        // 刷新数据重新布局的时候，可能可视区域的布局比表格高度小，此时底部会留白，让表格再滑动一下，把留白的区域再布局
+        View lastVisibleView = getChildAt(getChildCount() - 1);
+        if(lastVisibleView != null && lastVisibleView.getBottom() < getHeight()){
+            needToScrollDy = getHeight() - lastVisibleView.getBottom();
+            if(needToScrollDy > 0){
+                fill(recycler, state, 0, needToScrollDy);
+            }
+        }
     }
 
     /**
