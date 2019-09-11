@@ -190,21 +190,23 @@ public class XWTableView extends RelativeLayout {
                         @Override
                         public void onClick(View v) {
                             Toast.makeText(getContext(), "tttt", Toast.LENGTH_SHORT).show();
-                            XWTableData xwTableData = rowViewAdapter.getDataList().get(10);
-                            if(flag){
-                                xwTableData.setName("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
-                                        "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
-                            }else {
-                                xwTableData.setName("x");
+                            for(int i=9;i<=10;i++){
+                                XWTableData xwTableData = rowViewAdapter.getDataList().get(i);
+                                if(flag){
+                                    xwTableData.setName("xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx" +
+                                            "jjjjjjjjjjjjjjjjjjjjjjjjjjjjjj");
+                                }else {
+                                    xwTableData.setName("x");
+                                }
                             }
                             flag=!flag;
 
 //                            rowViewAdapter.notifyItemChanged(0);
-//                            rowViewAdapter.notifyDataSetChanged();
+                            rowViewAdapter.notifyDataSetChanged();
 
-                            XWTableRowViewAdapter rowViewAdapter1 = new XWTableRowViewAdapter(contentRV, tableColumns);
-                            rowViewAdapter1.setData(rowViewAdapter.getDataList());
-                            contentRV.setAdapter(rowViewAdapter1);
+//                            XWTableRowViewAdapter rowViewAdapter1 = new XWTableRowViewAdapter(contentRV, tableColumns);
+//                            rowViewAdapter1.setData(rowViewAdapter.getDataList());
+//                            contentRV.setAdapter(rowViewAdapter1);
                         }
                     });
                 }

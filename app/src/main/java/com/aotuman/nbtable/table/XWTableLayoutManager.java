@@ -19,10 +19,13 @@ public class XWTableLayoutManager extends RecyclerView.LayoutManager {
     private int rowWidth;//行宽
     private int freezeColumns = 0;//冻结列数
     private SparseArray<Rect> mItemRects;//key 是View的position，保存View的bounds 和 显示标志，
+    private SparseArray<Integer> mItemHeights;//key 是View的position，保存View的高度
+    private int totalHeightOffset = 0;//总的高度偏差（由于notify数据，上滑的时候(逆序)mItemRects还是原来那份数据，导致数据高度不对应）
 
     public XWTableLayoutManager(Context context, int rowWidth) {
         this.rowWidth = rowWidth;
         mItemRects = new SparseArray<>();
+        mItemHeights = new SparseArray<>();
     }
 
     @Override
@@ -88,8 +91,8 @@ public class XWTableLayoutManager extends RecyclerView.LayoutManager {
 
         int realOffset = dy; //实际滑动的距离， 可能会在边界处被修复
         // 边界修复代码
-        if (mVerticalOffset + realOffset < 0) { //上边界
-            realOffset = -mVerticalOffset;
+        if (mVerticalOffset + realOffset + totalHeightOffset< 0) { //上边界
+            realOffset = -(mVerticalOffset + totalHeightOffset);
         } else if (realOffset > 0) { // 下边界
             // 利用最后一个子View比较修正
             View lastChild = getChildAt(getChildCount() - 1);
@@ -333,6 +336,7 @@ public class XWTableLayoutManager extends RecyclerView.LayoutManager {
                             leftOffset + getDecoratedMeasurementHorizontal(child) + mHorizontalOffset,
                             topOffset + getDecoratedMeasurementVertical(child) + mVerticalOffset);
                     mItemRects.put(i, rect);
+                    mItemHeights.put(i, getDecoratedMeasurementVertical(child));
 
                     //改变lineHeight
                     topOffset += getDecoratedMeasurementVertical(child);
@@ -366,6 +370,7 @@ public class XWTableLayoutManager extends RecyclerView.LayoutManager {
                         mFirstVisiPos = i + 1;
                         break;
                     } else {
+
                         View child = recycler.getViewForPosition(i);
                         if (child != null) {
                             child.getLayoutParams().width = rowWidth;
@@ -373,10 +378,23 @@ public class XWTableLayoutManager extends RecyclerView.LayoutManager {
                         addView(child, 0);//将View添加至RecyclerView中，childIndex为1，但是View的位置还是由layout的位置决定
                         measureChildWithMargins(child, 0, 0);
 
+                        int curItemHeight = getDecoratedMeasurementVertical(child);
                         layoutDecoratedWithMargins(child, rect.left - mHorizontalOffset,
-                                rect.top - mVerticalOffset,
+                                rect.bottom - curItemHeight - mVerticalOffset,
                                 rect.right - mHorizontalOffset,
                                 rect.bottom - mVerticalOffset);
+
+                        // 判断一下item的高度是否有变化
+                        int preItemHeight = mItemHeights.get(i);
+                        if(preItemHeight > 0 && preItemHeight != curItemHeight){
+                            mItemHeights.put(i, curItemHeight);
+                            int heightOffset = curItemHeight - preItemHeight;
+                            totalHeightOffset += heightOffset;
+                        }
+
+                        if(mItemRects.get(i-1) != null){
+                            mItemRects.get(i-1).bottom = rect.bottom - curItemHeight;
+                        }
                     }
                 }
             }
