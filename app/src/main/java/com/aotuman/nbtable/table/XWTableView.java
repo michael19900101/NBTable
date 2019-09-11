@@ -97,6 +97,22 @@ public class XWTableView extends RelativeLayout {
             }
         }
     };
+    /**
+     * 重新设置adapter的时候，要把表头和底部布局的偏移量重新置为0，相当于布局还原
+     */
+    XWTableLayoutManager.RvAdapterChangedListener rvAdapterChangedListener = new XWTableLayoutManager.RvAdapterChangedListener() {
+        @Override
+        public void onAdapterChanged() {
+            if (freezeColumns > 0) {
+                offsetFreezeColumnHorizontal(headerLayout, -mHorizontalOffset);
+                offsetFreezeColumnHorizontal(bottomLayout, -mHorizontalOffset);
+            } else {
+                offsetColumnHorizontal(headerLayout, -mHorizontalOffset);
+                offsetColumnHorizontal(bottomLayout, -mHorizontalOffset);
+            }
+            mHorizontalOffset = 0;
+        }
+    };
 
     public XWTableView(Context context, List<XWTableColumn> tableColumns) {
         super(context);
@@ -125,6 +141,7 @@ public class XWTableView extends RelativeLayout {
         contentRV.addOnScrollListener(contentRVScrollListener);
         headerLayout.addOnLayoutChangeListener(headerLayoutChangeListener);
         bottomLayout.addOnLayoutChangeListener(bottomLayoutChangeListener);
+
     }
 
     public void setFreezeColumns(int freezeColumns) {
@@ -136,6 +153,7 @@ public class XWTableView extends RelativeLayout {
         this.tableWidth = tableWidth;
         xwTableLayoutManager = new XWTableLayoutManager(getContext(), tableWidth);
         contentRV.setLayoutManager(xwTableLayoutManager);
+        xwTableLayoutManager.setRvAdapterChangedListener(rvAdapterChangedListener);
     }
 
     public void setTableData() {
@@ -182,7 +200,11 @@ public class XWTableView extends RelativeLayout {
                             flag=!flag;
 
 //                            rowViewAdapter.notifyItemChanged(0);
-                            rowViewAdapter.notifyDataSetChanged();
+//                            rowViewAdapter.notifyDataSetChanged();
+
+                            XWTableRowViewAdapter rowViewAdapter1 = new XWTableRowViewAdapter(contentRV, tableColumns);
+                            rowViewAdapter1.setData(rowViewAdapter.getDataList());
+                            contentRV.setAdapter(rowViewAdapter1);
                         }
                     });
                 }

@@ -7,6 +7,7 @@ import android.util.SparseArray;
 import android.view.View;
 import android.view.ViewGroup;
 
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 public class XWTableLayoutManager extends RecyclerView.LayoutManager {
@@ -502,6 +503,24 @@ public class XWTableLayoutManager extends RecyclerView.LayoutManager {
 
     public void setFreezeColumns(int freezeColumns) {
         this.freezeColumns = freezeColumns;
+    }
+
+    @Override
+    public void onAdapterChanged(@Nullable RecyclerView.Adapter oldAdapter, @Nullable RecyclerView.Adapter newAdapter) {
+        super.onAdapterChanged(oldAdapter, newAdapter);
+        if (rvAdapterChangedListener != null){
+            rvAdapterChangedListener.onAdapterChanged();
+        }
+    }
+
+    private RvAdapterChangedListener rvAdapterChangedListener;
+
+    public interface RvAdapterChangedListener{
+        void onAdapterChanged();
+    }
+
+    public void setRvAdapterChangedListener(RvAdapterChangedListener rvAdapterChangedListener) {
+        this.rvAdapterChangedListener = rvAdapterChangedListener;
     }
 
     public int getVerticalSpace() {
